@@ -1,12 +1,8 @@
 import EventEmitter from 'events';
-import { StreamDecoder } from '../../codecs/Codec';
-import {
-  chunkIterator,
-  ObjectFrame,
-} from '../../codecs/iterators/ObjectChunkIterator';
+import { ObjectFrame } from '../../codecs/iterators/ObjectChunkIterator';
 import { MessageCounter } from '../../MessageCounter';
 import _ from 'lodash';
-import { ObjectChunkCodec } from '../../codecs/ObjectChunkCodec';
+import { ObjectChunkEncoder } from '../../codecs/ObjectChunkCodec';
 
 export const STREAM_FULL_MESSAGE_EVENT_KEY = 'full_message';
 export const STREAM_MESSAGE_PART_EVENT_KEY = 'part';
@@ -28,10 +24,7 @@ export class ObjectReadStream<
   private messageCounter: MessageCounter;
   private collector: any;
 
-  constructor(
-    protected codec: StreamDecoder<ObjectFrame, T>,
-    protected message_count: number,
-  ) {
+  constructor() {
     super();
     this.messageCounter = new MessageCounter();
   }
@@ -60,21 +53,16 @@ export class ObjectReadStream<
     if (this.messageCounter.remove(part.index, part.done)) {
       Object.entries(part.chunk).forEach(([key, value]) => {
         const splitted = key.split('.');
-        this.collector = this.compose(splitted, value, this.collector);
+        this.collector = this.decode(splitted, value, this.collector);
       });
-      this.emit(
-        STREAM_MESSAGE_PART_EVENT_KEY,
-        part,
-        part.index,
-        this.message_count,
-      );
+      this.emit(STREAM_MESSAGE_PART_EVENT_KEY, part, part.index);
       if (this.messageCounter.isFinished) {
         this.finish();
       }
     }
   }
 
-  private compose(splits: string[], value: unknown, collector?: any): any {
+  private decode(splits: string[], value: unknown, collector?: any): any {
     const [, second] = splits;
     if (!second) {
       return value;
@@ -82,11 +70,11 @@ export class ObjectReadStream<
     if (second.startsWith('[')) {
       const index = parseInt(second.slice(1, -1));
       collector = collector || [];
-      collector[index] = this.compose(splits.slice(1), value, collector[index]);
+      collector[index] = this.decode(splits.slice(1), value, collector[index]);
       return collector;
     } else {
       collector = collector || {};
-      collector[second] = this.compose(
+      collector[second] = this.decode(
         splits.slice(1),
         value,
         collector[second],
@@ -96,11 +84,9 @@ export class ObjectReadStream<
   }
 }
 
-const s = new ObjectReadStream(new ObjectChunkCodec(3), 3);
-
-const cdc = new ObjectChunkCodec(300, 'elements');
-
-const o = [
+const stream = new ObjectReadStream();
+const codec = new ObjectChunkEncoder(1000, 'elements');
+const obj = [
   {
     a: 1,
     b: 2,
@@ -110,19 +96,24 @@ const o = [
 ];
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
-for (let i = 0; i < 1000000; i++) {
-  o.push({
-    [alphabet[Math.floor(Math.random() * 26)]]: { i },
+for (let i = 0; i < 20000; i++) {
+  obj.push({
+    [alphabet[Math.floor(Math.random() * 26)]]: {
+      i,
+      b: 2,
+      c: 'abcdefghijklmnopqrstuvwxyz',
+      d: [1, 2, 3],
+    },
   } as any);
 }
 console.log('Object built!');
-const generator = cdc.encode(o as any);
+const generator = codec.encode(obj as any);
 console.log('Generator created!');
 let i = 0;
 for (const item of generator) {
   console.log('-');
-  s.addPart(item);
+  stream.addPart(item);
   console.log('|', i++);
 }
 
-console.dir((s as any).collector, { depth: null });
+console.dir((stream as any).collector, { depth: null });

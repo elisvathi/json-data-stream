@@ -1,4 +1,4 @@
-import { StreamCodec } from './Codec';
+import { StreamEncoder } from './Codec';
 import {
   chunkIterator,
   ObjectFrame,
@@ -6,8 +6,8 @@ import {
 } from './iterators/ObjectChunkIterator';
 import _ from 'lodash';
 
-export class ObjectChunkCodec<T extends ObjectInput>
-  implements StreamCodec<T, ObjectFrame>
+export class ObjectChunkEncoder<T extends ObjectInput>
+  implements StreamEncoder<T, ObjectFrame>
 {
   public constructor(
     private chunk_size: number = 100,
@@ -36,9 +36,5 @@ export class ObjectChunkCodec<T extends ObjectInput>
         };
       }
     }
-  }
-
-  public decode(data: ObjectFrame[]): T {
-    throw new Error('Not implemented');
   }
 }
