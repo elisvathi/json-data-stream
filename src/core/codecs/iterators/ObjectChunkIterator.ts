@@ -1,4 +1,4 @@
-export type ObjectInput = Record<string, unknown>;
+export type ObjectInput = Record<string, unknown> | Array<unknown> | unknown;
 
 export type ObjectFrame = {
   chunk: Record<string, unknown>;
@@ -57,10 +57,13 @@ export function* anyIterator<T extends ObjectInput>(
       }
     }
   } else {
-    if (Object.keys(object).length === 0) {
+    if (Object.keys(object as Record<string, unknown>).length === 0) {
       yield { [path]: object };
     } else {
-      for (const item of objectIterator(object, path)) {
+      for (const item of objectIterator(
+        object as Record<string, unknown>,
+        path,
+      )) {
         yield item;
       }
     }
