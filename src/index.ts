@@ -1,4 +1,4 @@
-import { StreamCollector } from './core/StreamCollector';
+// import { StreamCollector } from './core/StreamCollector';
 import { connect } from 'amqplib';
 
 async function main() {

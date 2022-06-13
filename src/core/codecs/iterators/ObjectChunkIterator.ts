@@ -3,6 +3,7 @@ export type ObjectInput = Record<string, unknown>;
 export type ObjectFrame = {
   chunk: Record<string, unknown>;
   done?: boolean;
+  index: number;
 };
 
 function isPrimitive<T>(value: T): boolean {

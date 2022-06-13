@@ -1,8 +1,8 @@
-import { StreamCollector } from './core/StreamCollector';
+// import { StreamCollector } from './core/StreamCollector';
 import { connect } from 'amqplib';
 import { v4 } from 'uuid';
 
-const collector = new StreamCollector<{ id: string; value: string }>();
+// const collector = new StreamCollector<{ id: string; value: string }>();
 
 async function main(): Promise<void> {
   const connection = await connect('amqp://localhost');

@@ -8,4 +8,4 @@ export interface StreamDecoder<TFrame, T> {
 
 export interface StreamCodec<T, TFrame>
   extends StreamEncoder<T, TFrame>,
-  StreamDecoder<TFrame, T> { }
+    StreamDecoder<TFrame, T> {}

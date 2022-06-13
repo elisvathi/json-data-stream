@@ -12,7 +12,7 @@ export class ObjectChunkCodec<T extends ObjectInput>
   public constructor(
     private chunk_size: number = 100,
     private strategy: 'elements' | 'chars' = 'elements',
-  ) { }
+  ) {}
 
   public *encode(data: ObjectInput): Generator<ObjectFrame> {
     const iterator = chunkIterator(data, this.chunk_size, this.strategy);
@@ -20,35 +20,25 @@ export class ObjectChunkCodec<T extends ObjectInput>
     if (current.done) {
       return;
     }
-    let value: ObjectFrame = { chunk: current.value };
+    let index: number = 0;
+    let value: ObjectFrame = { chunk: current.value, index };
     while (true) {
       current = iterator.next();
       if (current.done) {
         value.done = true;
+        yield value;
         break;
       } else {
         yield value;
-        value = { chunk: current.value };
+        value = {
+          chunk: current.value,
+          index: ++index,
+        };
       }
     }
   }
 
-  // Example 1
-  // '.[1]: 3'
-  // [undefined,3 ]
-  // Example 2
-  // '.user.[0].test: 3'
-  // { user : [{test: 3}]}
   public decode(data: ObjectFrame[]): T {
-    for (const item of data) {
-      for (const [key, value] of Object.keys(item.chunk)) {
-        const keys_split = key.split('.');
-      }
-    }
+    throw new Error('Not implemented');
   }
 }
-const codec = new ObjectChunkCodec();
-const value_key = '.[1].user.[1].value';
-const value = {};
-const v = codec.compose(value_key.split('.'), value);
-console.dir(v, { depth: null });
