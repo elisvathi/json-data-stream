@@ -1,0 +1,8 @@
+version: '2.1'
+services:
+  rabbitmq_2:
+    image: rabbitmq:3.8.5-management
+    container_name: services__rabbitmq
+    ports:
+      - '15672:15672'
+      - '5672:5672'
