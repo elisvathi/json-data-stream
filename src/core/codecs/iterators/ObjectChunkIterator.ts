@@ -73,7 +73,7 @@ export function* anyIterator<T extends ObjectInput>(
 export function* chunkIterator(
   t: any,
   chunk_size: number,
-  strategy: 'elements' | 'chars',
+  strategy: 'elements' | 'chars' = 'elements',
 ) {
   let accumulator: any[] = [];
   const toObject = (data: any[]) => {

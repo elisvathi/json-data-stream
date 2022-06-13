@@ -2,7 +2,6 @@ import EventEmitter from 'events';
 import { ObjectFrame } from '../../codecs/iterators/ObjectChunkIterator';
 import { MessageCounter } from '../../MessageCounter';
 import _ from 'lodash';
-import { ObjectChunkEncoder } from '../../codecs/ObjectChunkEncoder';
 
 export const STREAM_FULL_MESSAGE_EVENT_KEY = 'full_message';
 export const STREAM_MESSAGE_PART_EVENT_KEY = 'part';
@@ -15,15 +14,14 @@ type EvtHandlerByKey<
   TMsg,
   T extends EventTypes,
 > = T extends typeof STREAM_MESSAGE_PART_EVENT_KEY
-  ? (part: TMsg[], part_index?: number) => void
-  : (full_array: TMsg[]) => void;
+  ? (part: ObjectFrame, part_index?: number) => void
+  : (full_array: TMsg) => void;
 
 export class ObjectReadStream<
   T extends Record<string, unknown> | Array<unknown>,
 > extends EventEmitter {
   private messageCounter: MessageCounter;
   private collector: any;
-
   constructor() {
     super();
     this.messageCounter = new MessageCounter();
@@ -83,37 +81,3 @@ export class ObjectReadStream<
     }
   }
 }
-
-const stream = new ObjectReadStream();
-const codec = new ObjectChunkEncoder(1000, 'elements');
-const obj = [
-  {
-    a: 1,
-    b: 2,
-    c: [1, 2, 3, 4, 5],
-    d: [1, 2, { d: 3 }, false, true, 1],
-  },
-];
-
-const alphabet = 'abcdefghijklmnopqrstuvwxyz';
-for (let i = 0; i < 20000; i++) {
-  obj.push({
-    [alphabet[Math.floor(Math.random() * 26)]]: {
-      i,
-      b: 2,
-      c: 'abcdefghijklmnopqrstuvwxyz',
-      d: [1, 2, 3],
-    },
-  } as any);
-}
-console.log('Object built!');
-const generator = codec.encode(obj as any);
-console.log('Generator created!');
-let i = 0;
-for (const item of generator) {
-  console.log('-');
-  stream.addPart(item);
-  console.log('|', i++);
-}
-
-console.dir((stream as any).collector, { depth: null });
