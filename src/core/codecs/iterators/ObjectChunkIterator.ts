@@ -5,6 +5,7 @@ export type ObjectFrame = {
   done?: boolean;
   index: number;
 };
+const DOT_ESCAPE = '\\.';
 
 function isPrimitive<T>(value: T): boolean {
   return (
@@ -34,7 +35,11 @@ function* objectIterator<T extends Record<string, unknown>>(
   let keys = Object.keys(obj);
   let i = 0;
   while (i < keys.length) {
-    const nextResult = anyIterator(obj[keys[i]] as any, `${path}.${keys[i]}`);
+    const key_escaped = keys[i].replace(/\./g, DOT_ESCAPE);
+    const nextResult = anyIterator(
+      obj[keys[i]] as any,
+      `${path}.${key_escaped}`,
+    );
     for (const next of nextResult) {
       yield next;
     }
@@ -76,6 +81,7 @@ export function* chunkIterator(
   strategy: 'elements' | 'chars' = 'elements',
 ) {
   let accumulator: any[] = [];
+  //TODO: Try remove this
   const toObject = (data: any[]) => {
     return data.reduce((a, i) => {
       return { ...a, ...i };
@@ -84,6 +90,7 @@ export function* chunkIterator(
   const iterator = anyIterator(t, '');
   if (strategy === 'chars') {
     let size: number = 0;
+    //TODO: Different strategy for measuring (average?)
     for (const item of iterator) {
       accumulator.push(item);
       size += JSON.stringify(item).length;

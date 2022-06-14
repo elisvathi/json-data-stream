@@ -2,6 +2,9 @@ import { connect, Channel } from 'amqplib';
 import express from 'express';
 import { v4 } from 'uuid';
 import { StreamCollector } from './core/StreamCollector';
+import _ from 'lodash';
+import axios from 'axios';
+import fs from 'fs';
 
 const streamCollector = new StreamCollector();
 
@@ -15,7 +18,7 @@ async function startExpress(channel: Channel, rpc_queue: string) {
         resolve(data);
       });
       streamCollector.on(`part_${message_id}`, (_, index) => {
-        console.log(`Received part!`, index);
+        console.log(`Received part!`, (index || 0) + 1);
       });
       channel.sendToQueue(
         'server_queue',
@@ -26,7 +29,14 @@ async function startExpress(channel: Channel, rpc_queue: string) {
         },
       );
     });
-    res.send(response.items.map((x: any, i: string) => ({ i, v: x.id })));
+
+    const { data } = await axios.get(
+      'https://api.clickflare.io/api/swagger.json',
+    );
+    fs.writeFileSync('data.json', JSON.stringify(data));
+    fs.writeFileSync('response.json', JSON.stringify(response));
+    const r = _.isEqual(response, data);
+    res.send({ r });
   });
   await new Promise<void>((resolve) => {
     app.listen(Number(8080), '0.0.0.0', resolve);

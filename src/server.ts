@@ -1,5 +1,6 @@
 import { connect } from 'amqplib';
 import { ObjectChunkEncoder } from './core/codecs/ObjectChunkEncoder';
+import axios from 'axios';
 
 function randomString(ln: number) {
   var text = '';
@@ -18,16 +19,19 @@ async function main() {
   const queue = 'server_queue';
   await channel.assertQueue(queue);
 
-  const rnd = randomString(1_000_000);
+  const rnd = randomString(100);
+  const { data } = await axios.get(
+    'https://api.clickflare.io/api/swagger.json',
+  );
   channel.consume(queue, async (message) => {
     const reply_to = message?.properties.replyTo;
     const correlation_id = message?.properties.correlationId;
     if (reply_to && correlation_id) {
-      let pld: any = new Array(1000).fill(0).map((_index, i) => {
-        const payload = { id: i, value: rnd };
-        return payload;
-      });
-      pld = { items: pld };
+      // let pld: any = new Array(3).fill(0).map((_index, i) => {
+      //   const payload = { id: i, value: rnd };
+      //   return payload;
+      // });
+      const pld = data;
       const encoder = new ObjectChunkEncoder(10);
       const gener = encoder.encode(pld);
       let i = 0;

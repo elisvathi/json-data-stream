@@ -50,7 +50,7 @@ export class ObjectReadStream<
   public addPart(part: ObjectFrame) {
     if (this.messageCounter.remove(part.index, part.done)) {
       Object.entries(part.chunk).forEach(([key, value]) => {
-        const splitted = key.split('.');
+        const splitted = key.split(/(?<!\\)\./gm);
         this.collector = this.decode(splitted, value, this.collector);
       });
       this.emit(STREAM_MESSAGE_PART_EVENT_KEY, part, part.index);
@@ -72,11 +72,8 @@ export class ObjectReadStream<
       return collector;
     } else {
       collector = collector || {};
-      collector[second] = this.decode(
-        splits.slice(1),
-        value,
-        collector[second],
-      );
+      const key = second.replace(/\\/g, '');
+      collector[key] = this.decode(splits.slice(1), value, collector[key]);
       return collector;
     }
   }
