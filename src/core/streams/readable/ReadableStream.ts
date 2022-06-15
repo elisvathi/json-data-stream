@@ -1,7 +1,6 @@
 import EventEmitter from 'events';
 import { ObjectFrame } from '../../codecs/iterators/ObjectChunkIterator';
 import { MessageCounter } from '../../MessageCounter';
-import _ from 'lodash';
 
 export const STREAM_FULL_MESSAGE_EVENT_KEY = 'full_message';
 export const STREAM_MESSAGE_PART_EVENT_KEY = 'part';

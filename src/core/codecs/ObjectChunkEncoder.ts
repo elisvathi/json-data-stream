@@ -4,7 +4,6 @@ import {
   ObjectFrame,
   ObjectInput,
 } from './iterators/ObjectChunkIterator';
-import _ from 'lodash';
 
 export class ObjectChunkEncoder<T extends ObjectInput>
   implements StreamEncoder<T, ObjectFrame>

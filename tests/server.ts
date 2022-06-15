@@ -1,5 +1,5 @@
 import { connect } from 'amqplib';
-import { ObjectChunkEncoder } from './core/codecs/ObjectChunkEncoder';
+import { ObjectChunkEncoder } from '../src/core/codecs/ObjectChunkEncoder';
 import axios from 'axios';
 
 function randomString(ln: number) {
