@@ -2,10 +2,10 @@
 
 This package can be used to transfer large json objects/arrays over a network.
 It works by spliting the json to chunks that are always parseable valid json objects.
-These streams can be collected incrementaly without havin a single parse call.
+These streams can be collected incrementaly without having a single parse call.
 This way it avoids taking up memory for large json objects.
 
-There are two classes this package exposes:
+There are three classes that this package exposes:
 
 - `ObjectChunkEncoder` encodes a json object to a stream of chunks
 - `ObjectReadStream` is a helper class to collect chunks and parse them to a json object
@@ -13,7 +13,7 @@ There are two classes this package exposes:
 
 ## ObjectchunkEncoder
 
-ObjectChunkEncoder utilizes generators to yield chunks of json objects.
+`ObjectChunkEncoder` utilizes generators to yield chunks of json objects.
 So it does not have a single serialize call to avoid taking too much memory on the sender side.
 JSON objects are flatted down to its leaf nodes.
 
@@ -44,6 +44,12 @@ is converted to:
   { ".a.b.c.d.[6].a": 1 }
 ]
 ```
+
+_Important:_ This serialization does not handle circular referencing object at the moment.
+So be careful because because it might end up streaming infinitely.
+
+This conversion does not happen for the whole object,
+so depending on the chunk size does not take extra temoporary memory (for the whole object), but instead uses generators to yield the chunks.
 
 The final message the encoder emits is a json object of shape:
 
@@ -76,10 +82,10 @@ Collects all parts of a stream and emits events for a single part or when stream
 // {chunk: Array<Record<string, unknown>>, index: number, done?: boolean};
 const part = {....}
 const stream = new ObjectReadStream();
-collector.addPart(part_1);
-collector.addPart(part_2);
+stream.addPart(part_1);
+stream.addPart(part_2);
 ..
-collector.addPart(part_n);
+stream.addPart(part_n);
 
 stream.on('part', (value, part_index)=>{
     console.log('Received part with index',value, part_index)
@@ -103,4 +109,9 @@ collector.on(`part_${message_id}`, (value, part_index) => {
 collector.on(`full_message_${message_id}`, (value) => {
   console.log('Received full message', value);
 });
+
+collector.addPart(part_1);
+collector.addPart(part_2);
+..
+collector.addPart(part_n);
 ```
