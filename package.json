@@ -1,11 +1,11 @@
 {
   "name": "parseable_stream",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "build_package": "npm run build && cp package.json lib/package.json"
+    "build_package": "npm run build && cp README.md lib/README.md && cp package.json lib/package.json"
   },
   "keywords": [],
   "author": "",
