@@ -3,8 +3,6 @@ import express from 'express';
 import { v4 } from 'uuid';
 import { StreamCollector } from './core/StreamCollector';
 import _ from 'lodash';
-import axios from 'axios';
-import fs from 'fs';
 
 const streamCollector = new StreamCollector();
 
@@ -29,15 +27,9 @@ async function startExpress(channel: Channel, rpc_queue: string) {
         },
       );
     });
-
-    const { data } = await axios.get(
-      'https://api.clickflare.io/api/swagger.json',
-    );
-    fs.writeFileSync('data.json', JSON.stringify(data));
-    fs.writeFileSync('response.json', JSON.stringify(response));
-    const r = _.isEqual(response, data);
-    res.send({ r });
+    res.send(response.items.map((x: any) => x.id));
   });
+
   await new Promise<void>((resolve) => {
     app.listen(Number(8080), '0.0.0.0', resolve);
   });

@@ -49,9 +49,11 @@ export class ObjectReadStream<
 
   public addPart(part: ObjectFrame) {
     if (this.messageCounter.remove(part.index, part.done)) {
-      Object.entries(part.chunk).forEach(([key, value]) => {
-        const splitted = key.split(/(?<!\\)\./gm);
-        this.collector = this.decode(splitted, value, this.collector);
+      part.chunk.forEach((obj) => {
+        Object.entries(obj).forEach(([key, value]) => {
+          const splitted = key.split(/(?<!\\)\./gm);
+          this.collector = this.decode(splitted, value, this.collector);
+        });
       });
       this.emit(STREAM_MESSAGE_PART_EVENT_KEY, part, part.index);
       if (this.messageCounter.isFinished) {
