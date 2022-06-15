@@ -99,19 +99,28 @@ stream.on('full_message', (value)=>{
 
 ## StreamCollector
 
+`StreamCollector` creates a stream for every `unique_id` that we call addPart() with
+We can then subscribe to that stream using the collector and message-id in the event name.
+
+- `part_${message_id}`
+- `full_message_${message_id}`
+
+When a stream is completed it is cleared from the collector to avoid leaks (along with its event listeners).
+
 ```javascript
 const collector = new StreamCollector();
 const message_id = 'abc_123';
+
 collector.on(`part_${message_id}`, (value, part_index) => {
   console.log('Received part with index', value, part_index);
 });
 
-collector.on(`full_message_${message_id}`, (value) => {
+collector.once(`full_message_${message_id}`, (value) => {
   console.log('Received full message', value);
 });
 
-collector.addPart(part_1);
-collector.addPart(part_2);
+collector.addPart(message_id, part_1);
+collector.addPart(message_id, part_2);
 ..
-collector.addPart(part_n);
+collector.addPart(message_id, part_n);
 ```
