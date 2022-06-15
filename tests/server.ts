@@ -18,7 +18,6 @@ async function main() {
   const channel = await connection.createConfirmChannel();
   const queue = 'server_queue';
   await channel.assertQueue(queue);
-
   const rnd = randomString(10_000_000);
   const { data } = await axios.get(
     'https://api.clickflare.io/api/swagger.json',
