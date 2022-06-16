@@ -1,8 +1,8 @@
 # Parseable Stream
 
 This package can be used to transfer large json objects/arrays over a network.
-It works by spliting the json to chunks that are always parseable valid json objects.
-These streams can be collected incrementaly without having a single parse call.
+It works by splitting the json to chunks that are always parseable valid json objects.
+These streams can be collected incrementally without having a single parse call.
 This way it avoids taking up memory for large json objects.
 
 There are three classes that this package exposes:
@@ -11,7 +11,7 @@ There are three classes that this package exposes:
 - `ObjectReadStream` is a helper class to collect chunks and parse them to a json object
 - `StreamCollector` handles multiple streams and emits events for each of them
 
-## ObjectchunkEncoder
+## ObjectChunkEncoder
 
 `ObjectChunkEncoder` utilizes generators to yield chunks of json objects.
 So it does not have a single serialize call to avoid taking too much memory on the sender side.
@@ -49,7 +49,7 @@ _Important:_ This serialization does not handle circular referencing object at t
 So be careful because because it might end up streaming infinitely.
 
 This conversion does not happen for the whole object,
-so depending on the chunk size does not take extra temoporary memory (for the whole object), but instead uses generators to yield the chunks.
+so depending on the chunk size does not take extra temporary memory (for the whole object), but instead uses generators to yield the chunks.
 
 The final message the encoder emits is a json object of shape:
 
@@ -90,15 +90,15 @@ stream.addPart(part_2);
 ..
 stream.addPart(part_n);
 
-stream.on('first_timeout', ()=>{
+stream.on('first_timeout', () => {
   console.log("Stream never got any message!");
 });
 
-stream.on('timeout', ()=>{
+stream.on('part_timeout', () => {
   console.log("Stream stopped receiving parts!");
 });
 
-stream.on('timeout', ()=>{
+stream.on('timeout', () => {
   console.log("Received timeout for either first message or part")
 });
 
@@ -125,6 +125,18 @@ When a stream is completed it is cleared from the collector to avoid leaks (alon
 ```javascript
 const collector = new StreamCollector();
 const message_id = 'abc_123';
+
+collector.on(`first_timeout_${message_id}`, () => {
+  console.log(`Stream ${message_id} stopped receiving any message!`);
+});
+
+collector.on(`part_timeout_${message_id}`, () => {
+  console.log(`Stream ${message_id} stopped receiving parts without getting the full message!`);
+});
+
+collector.on(`timeout_${message_id}`, () => {
+  console.log(`Stream ${message_id} reached timeout!`);
+});
 
 collector.on(`part_${message_id}`, (value, part_index) => {
   console.log('Received part with index', value, part_index);
