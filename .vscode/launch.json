@@ -9,7 +9,7 @@
       "request": "launch",
       "name": "Launch Program",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/build/inplace.js"
+      "program": "${workspaceFolder}/tests/inplace.ts"
     }
   ]
 }

@@ -5,23 +5,31 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "build_package": "npm run build && cp README.md lib/README.md && cp package.json lib/package.json"
+    "build_package": "npm run build && cp README.md lib/README.md && cp package.json lib/package.json",
+    "benchmark": "npx jest --projects jest-bench.config.json",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {},
   "devDependencies": {
-    "uuid": "^8.3.2",
-    "amqplib": "^0.10.0",
-    "axios": "^0.27.2",
-    "express": "^4.18.1",
+    "@babel/core": "^7.18.5",
+    "@babel/preset-env": "^7.18.2",
+    "@babel/preset-typescript": "^7.17.12",
     "@types/amqplib": "^0.8.2",
     "@types/express": "^4.17.13",
+    "@types/jest": "^27.5.1",
     "@types/lodash": "^4.14.182",
     "@types/node": "^17.0.41",
     "@types/uuid": "^8.3.4",
+    "amqplib": "^0.10.0",
+    "axios": "^0.27.2",
+    "babel-jest": "^28.1.1",
+    "express": "^4.18.1",
+    "jest": "^27.5.1",
+    "jest-bench": "^27.5.1",
+    "lodash": "^4.17.21",
     "typescript": "^4.7.3",
-    "lodash": "^4.17.21"
+    "uuid": "^8.3.2"
   }
 }

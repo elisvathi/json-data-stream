@@ -1,9 +1,8 @@
-import { ObjectChunkEncoder } from './core/codecs/ObjectChunkEncoder';
+import { ObjectChunkEncoder } from '../../src/core/codecs/ObjectChunkEncoder';
 import { v4 } from 'uuid';
-import { StreamCollector } from './core/StreamCollector';
+import { StreamCollector } from '../../src/core/StreamCollector';
 import _ from 'lodash';
 import express from 'express';
-import { resolve } from 'path';
 
 function randomString(ln: number) {
   var text = '';
@@ -40,7 +39,7 @@ async function call() {
 
 async function main() {
   const app = express();
-  app.use('/', async (req, res) => {
+  app.use('/', async (_req, res) => {
     const result = await call();
     console.log({ result });
     res.send({ ok: _.isEqual(result, pld) });

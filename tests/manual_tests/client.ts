@@ -1,7 +1,7 @@
 import { connect, Channel } from 'amqplib';
 import express from 'express';
 import { v4 } from 'uuid';
-import { StreamCollector } from './core/StreamCollector';
+import { StreamCollector } from '../../src/core/StreamCollector';
 import _ from 'lodash';
 
 const streamCollector = new StreamCollector();

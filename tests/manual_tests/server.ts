@@ -1,5 +1,5 @@
 import { connect } from 'amqplib';
-import { ObjectChunkEncoder } from '../src/core/codecs/ObjectChunkEncoder';
+import { ObjectChunkEncoder } from '../../src/core/codecs/ObjectChunkEncoder';
 
 function randomString(ln: number) {
   var text = '';
