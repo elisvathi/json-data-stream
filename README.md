@@ -64,7 +64,7 @@ The final message the encoder emits is a json object of shape:
 ### Usage
 
 ```javascript
-const {ObjectChunkEncoder} = require('parseable-stream');
+const { ObjectChunkEncoder } = require('parseable-stream');
 const chunk_size = 10;
 const encoder = new ObjectChunkEncoder(chunk_size);
 const largeJsonObject = {...};
@@ -81,11 +81,26 @@ Collects all parts of a stream and emits events for a single part or when stream
 // received part object
 // {chunk: Array<Record<string, unknown>>, index: number, done?: boolean};
 const part = {....}
-const stream = new ObjectReadStream();
+const stream = new ObjectReadStream({
+  first_message_timeout_seconds: 100,
+  part_timeout_seconds: 3
+});
 stream.addPart(part_1);
 stream.addPart(part_2);
 ..
 stream.addPart(part_n);
+
+stream.on('first_timeout', ()=>{
+  console.log("Stream never got any message!");
+});
+
+stream.on('timeout', ()=>{
+  console.log("Stream stopped receiving parts!");
+});
+
+stream.on('timeout', ()=>{
+  console.log("Received timeout for either first message or part")
+});
 
 stream.on('part', (value, part_index)=>{
     console.log('Received part with index',value, part_index)
