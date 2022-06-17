@@ -16,7 +16,7 @@ export type ObjectReadStreamOptions = {
 
 export class ObjectReadStream<
   T extends Record<string, unknown> | Array<unknown>,
-  > extends ReadableStreamEmitter<T> {
+> extends ReadableStreamEmitter<T> {
   private messageCounter: MessageCounter;
   private collector: any;
   private options: ObjectReadStreamOptions;

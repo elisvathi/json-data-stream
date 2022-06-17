@@ -40,11 +40,12 @@ export class StreamCollector<
     message_id: string,
     part: ObjectFrame,
     options?: ObjectReadStreamOptions,
-  ): void {
+  ): boolean {
     if (!this.streams[message_id]) {
-      this.createStream(message_id, options);
+      return false;
     }
     this.streams[message_id].addPart(part);
+    return true;
   }
 
   public on<E extends COLLECTOR_EVENT_KEY>(

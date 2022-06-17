@@ -1,4 +1,4 @@
-import { ObjectReadStream } from '../src/core/streams/readable/ObjectReadStream';
+import { ObjectReadStream } from '../src';
 
 test('First message timeout should fire', async () => {
   const stream = new ObjectReadStream<any>({
@@ -65,14 +65,9 @@ test('Part timeout should not fire', async () => {
     first_message_timeout_seconds: 3,
     part_timeout_seconds: 2,
   });
+
   const r = await Promise.race([
     new Promise<boolean>((resolve) => {
-      stream.on('full_message', () => {
-        console.log('finished!');
-      });
-      stream.on('part', (_p, num) => {
-        console.log('part!', num);
-      });
       stream.on('timeout', () => {
         resolve(true);
       });

@@ -125,6 +125,7 @@ When a stream is completed it is cleared from the collector to avoid leaks (alon
 ```javascript
 const collector = new StreamCollector();
 const message_id = 'abc_123';
+collector.addStream(message_id, { part_timeout_seconds: 1 });
 
 collector.on(`first_timeout_${message_id}`, () => {
   console.log(`Stream ${message_id} stopped receiving any message!`);
@@ -146,7 +147,10 @@ collector.once(`full_message_${message_id}`, (value) => {
   console.log('Received full message', value);
 });
 
-collector.addPart(message_id, part_1);
+// addPart returns true if stream is created
+collector.addPart(message_id, part_1); // true
+collector.addPart('unregistered_messag_id', part_1); // false
+
 collector.addPart(message_id, part_2);
 ..
 collector.addPart(message_id, part_n);
