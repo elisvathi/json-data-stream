@@ -4,6 +4,7 @@ export type ObjectFrame = {
   chunk: Array<Record<string, unknown>>;
   done?: boolean;
   index: number;
+  flatted?: boolean;
 };
 const DOT_ESCAPE = '\\.';
 

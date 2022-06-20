@@ -1,5 +1,5 @@
 import { ObjectReadStream, ObjectChunkEncoder } from '../src';
-async function testObject(obj: any, flatten: boolean = false) {
+async function testObject(obj: any, flatten: boolean = true) {
   const encoder = new ObjectChunkEncoder(1, 'elements', flatten);
   const iterator = encoder.encode(obj);
   const stream = new ObjectReadStream();

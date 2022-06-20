@@ -1,3 +1,4 @@
+import { deserializeCircular } from '../../codecs/circular';
 import { ObjectFrame } from '../../codecs/iterators/ObjectChunkIterator';
 import { MessageCounter } from '../../MessageCounter';
 import {
@@ -16,12 +17,13 @@ export type ObjectReadStreamOptions = {
 
 export class ObjectReadStream<
   T extends Record<string, unknown> | Array<unknown>,
-> extends ReadableStreamEmitter<T> {
+  > extends ReadableStreamEmitter<T> {
   private messageCounter: MessageCounter;
   private collector: any;
   private options: ObjectReadStreamOptions;
   private first_message_timeout_handle?: NodeJS.Timeout;
   private part_timeout_handle?: NodeJS.Timeout;
+  private flatted?: boolean;
 
   constructor(options: ObjectReadStreamOptions = {}) {
     super();
@@ -57,7 +59,11 @@ export class ObjectReadStream<
 
   private finish(): void {
     this.clearTimeouts();
-    this.emit(FULL_MESSAGE, this.collector);
+    if (this.flatted) {
+      this.emit(FULL_MESSAGE, deserializeCircular(this.collector));
+    } else {
+      this.emit(FULL_MESSAGE, this.collector);
+    }
     this.removeStreamListeners();
   }
 
@@ -69,6 +75,9 @@ export class ObjectReadStream<
      */
     this.clearTimeouts();
     this.messageCounter.remove(part.index, part.done);
+    if (part.flatted) {
+      this.flatted = part.flatted;
+    }
     part.chunk.forEach((obj) => {
       Object.entries(obj).forEach(([key, value]) => {
         const splitted = key.split(/(?<!\\)\./gm);

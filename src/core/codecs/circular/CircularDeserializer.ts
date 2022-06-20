@@ -1,5 +1,5 @@
 class CircularDeserializer {
-  public constructor(private data: unknown[]) {}
+  public constructor(private data: unknown[]) { }
 
   private deserializeArray(array: unknown[]) {
     for (let i = 0; i < array.length; i++) {
