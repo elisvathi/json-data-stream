@@ -7,7 +7,7 @@ export type ObjectFrame = {
 };
 const DOT_ESCAPE = '\\.';
 
-function isPrimitive<T>(value: T): boolean {
+export function isPrimitive<T>(value: T): boolean {
   return (
     !value ||
     typeof value === 'string' ||
