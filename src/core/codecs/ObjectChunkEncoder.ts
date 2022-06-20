@@ -11,7 +11,7 @@ export class ObjectChunkEncoder<T extends ObjectInput>
   public constructor(
     private chunk_size: number = 100,
     private strategy: 'elements' | 'chars' = 'elements',
-  ) {}
+  ) { }
 
   public *encode(data: ObjectInput): Generator<ObjectFrame> {
     const iterator = chunkIterator(data, this.chunk_size, this.strategy);
