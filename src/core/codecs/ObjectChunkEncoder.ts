@@ -13,7 +13,7 @@ export class ObjectChunkEncoder<T extends ObjectInput>
     private chunk_size: number = 100,
     private strategy: 'elements' | 'chars' = 'elements',
     private flatten: boolean = false,
-  ) { }
+  ) {}
 
   public *encode(data: ObjectInput): Generator<ObjectFrame> {
     if (this.flatten) {
@@ -28,12 +28,12 @@ export class ObjectChunkEncoder<T extends ObjectInput>
     let value: ObjectFrame = {
       chunk: current.value,
       index,
-      flatted: this.flatten,
     };
     while (true) {
       current = iterator.next();
       if (current.done) {
         value.done = true;
+        value.flatted = this.flatten;
         yield value;
         break;
       } else {
@@ -41,7 +41,6 @@ export class ObjectChunkEncoder<T extends ObjectInput>
         value = {
           chunk: current.value,
           index: ++index,
-          flatted: this.flatten,
         };
       }
     }

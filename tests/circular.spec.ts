@@ -1,4 +1,3 @@
-// var Flatted = require('../cjs');
 import {
   deserializeCircular,
   serializeCircular,
@@ -341,8 +340,8 @@ makeTest(
       },
       a4: [],
     },
-    json,
-    restored;
+    json: any,
+    restored: any;
 
   original.a1.a2[0] = original.a1;
   original.a4[0] = original.a1.a3[0];

@@ -1,4 +1,5 @@
 import { StreamCollector } from '../src';
+import _ from 'lodash';
 
 test('Collector returns false when adding part without creating stream', () => {
   const collector = new StreamCollector();
